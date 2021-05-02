@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Task manager</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Список задач</h2>
+
+    <div>
+        <form action="/addTask" method="post">
+            <input class="main_field" type="text" placeholder="Новая задача" name="newTaskName" /><br>
+            <input id="btnShowDetails" class="btn" type="button" onclick="showDetailsFields()" value="Показать детали"/><br>
+                <div id="pnlDetailFields" class="hideElement">
+                    <input class="field_detail field_desc" type="text" placeholder="Описание задачи" name="newTaskDescriptor" />
+                    <input type="date" class="field_detail" name="newTaskDate"/>
+                    <input type="radio" value='true' name="newTaskStatus"/> <a class="label">Важно!</a> <br>
+                    <input class="btn" type="submit" value="Создать" />
+                </div>
+        </form>
+    </div>
+
+    <div class="line_sort_buttons">
+        <form action="/sortStatus" method="post">
+            <input class="btn_str btn" type="submit" value="Сортировать"  />
+        </form>
+        <form action="/" method="get">
+            <input class="btn_str btn" type="submit" value="Исходный вид"  />
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('btnShowDetails').onclick = function() {
+            if (document.getElementById('pnlDetailFields').className === "") {
+                document.getElementById('pnlDetailFields').className = "hideElement";
+            } else {
+                document.getElementById('pnlDetailFields').className = ""
+            }
+        }
+    </script>
+
+    <% if(listExists) {%>
+        <ul id="list">
+            <% for(var i=0; i< tasks.length;i++) {%>
+                <li>
+
+                    <div id=<%=tasks[i].tid%> class="task_block">
+
+                        <div class="task_name"><%=tasks[i].tname %></div>
+
+                        <% if(tasks[i].tdate !== null) {%>
+                            <div class="date"><%=tasks[i].tdate%></div>
+                        <% } %>
+
+                        <% if(tasks[i].tdescription !== null) {%>
+                            <div class="description"><%=tasks[i].tdescription %></div>
+                        <% } %>
+
+                        <% if(tasks[i].tfile !== null) {%>
+                            <a class="file_name"> <%=tasks[i].tfile %> </a>
+                        <% } %>
+
+                        <% if(tasks[i].tisimportant === true) {%>
+                            <script>
+                                document.getElementById(<%=tasks[i].tid %>).className = "statusImportant"
+                            </script>
+                        <% } %>
+
+                        <form action="/deleteTask" method="post">
+                            <input type="hidden" name="taskId" value=<%=tasks[i].tid %>>
+                            <input class="btn_task" type="submit" value="Удалить"  />
+                        </form>
+
+                        <div class="line_buttons">
+
+                            <form action="/addFile" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="taskIdAdd" value=<%=tasks[i].tid %>>
+                                <input class='file_loader btn_str' type="file" name="filedata" />
+                                <input class="btn_str" type="submit" value="Добавить" />
+                            </form>
+
+                            <form action="/loadFile" method="post">
+                                <input type="hidden" name="taskIdDel" value=<%=tasks[i].tid %>>
+                                <input type="hidden" name="fileNameGet" value=<%=tasks[i].tfile %>>
+                                <input class="btn_str" type="submit" value="Скачать"  />
+                            </form></div>
+
+                        </div>
+
+
+
+                </li>
+            <%} %>
+        </ul>
+    <% } %>
+
+</div>
+</body>
+</html>

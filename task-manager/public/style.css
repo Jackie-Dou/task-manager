@@ -1,0 +1,121 @@
+body {
+    text-align: center;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 18px; }
+
+input {
+    margin: 20px auto;
+    border: 2px solid #eee;
+    padding: 10px 20px;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 16px; }
+
+.container {
+    width: 450px;
+    margin: auto;
+}
+
+.main_field {
+    margin: 2px;
+}
+
+.task_name {
+    font-size: 18px;
+    padding: 13px;
+    font-weight: bold;
+    height: 15px;
+}
+
+.task_block {
+    border: ridge black;
+    padding: 3px;
+    margin: 3px;
+    font-size: 14px;
+}
+
+.label {
+    font-size: 14px;
+}
+
+.btn_task {
+    padding: 1px;
+    margin: 3px;
+    font-size: 12px;
+    width: 68px;
+    border-color: black;
+}
+
+.field_detail {
+    width: 135px;
+    padding: 1px;
+    margin: 3px;
+    font-size: 14px;
+    border-color: gray;
+    height: 25px;
+}
+
+.field_desc {
+    width: 300px;
+}
+
+.btn_str {
+    width: 65px;
+    padding: 1px;
+    margin: 3px;
+    font-size: 10px;
+    float: left;
+    color: gray;
+}
+
+.btn {
+    padding: 7px;
+    margin: 3px;
+    font-size: 13px;
+    border-color: black;
+    width: 130px;
+    color: black;
+}
+
+.line_buttons {
+    height: 20px;
+}
+
+.line_sort_buttons {
+    height: 30px;
+    margin-left: 9%;
+}
+
+.file_loader {
+    width: 180px;
+    border: none;
+}
+
+.file_name {
+    font-style: italic;
+}
+
+.date {
+    font-size: 14px;
+    color: crimson;
+}
+
+.description {
+    margin: 3px;
+}
+
+.hideElement {
+    display: none;
+}
+
+.statusImportant {
+    border: ridge gold;
+    padding: 3px;
+    margin: 3px;
+    font-size: 14px;
+}
+
+
+
+
+
+
