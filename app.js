@@ -5,6 +5,7 @@ const multer  = require("multer");
 const mkdirp = require('mkdirp');
 const rimraf = require("rimraf");
 const { Client } = require('pg');
+const dbConnector = require("./database/dbConnection");
 
 const urlencodedParser = bodyParser.urlencoded({extended: true});
 
@@ -26,17 +27,27 @@ app.use(multer({storage:storageConfig}).single("filedata"));
 app.set("view engine", "ejs");
 
 let tasksList = [];
-const client = new Client({
+// const client = new Client({
+//     user: 'tasks',
+//     host: 'localhost',
+//     database: 'tasks',
+//     password: '12345',
+//     port: 5432
+// });
+
+// client.connect(function() {
+//     loadTasks();
+// });
+
+client = new Client({
     user: 'tasks',
     host: 'localhost',
     database: 'tasks',
     password: '12345',
     port: 5432
 });
-
-client.connect(function() {
-    loadTasks();
-});
+let connector = new dbConnector(client);
+connector.startDB(tasksList);
 
 let server = app.listen(3000);
 
@@ -72,30 +83,30 @@ app.post("/addTask", urlencodedParser, function (request, response) {
     let description = request.body.newTaskDescriptor;
     let status;
     status = request.body.newTaskStatus === 'true';
-    insertTask(name, description, status, date);
-    loadTasks();
+    connector.insertTask(name, description, status, date);
+    connector.loadTasks(tasksList);
     response.redirect("/");
 });
 
 app.post("/deleteTask", urlencodedParser, function (request, response) {
     if(!request.body) return response.sendStatus(400);
-    deleteTask(request.body.taskId);
+    connector.deleteTask(request.body.taskId);
     rimraf.sync('addFiles/'+request.body.taskId);
-    loadTasks();
+    connector.loadTasks(tasksList);
     response.redirect("/");
 });
 
 app.post("/addFile", function (request, response) {
     if(!request.file) return response.sendStatus(400);
-    updateTaskFile(request.file.filename, request.body.taskIdAdd);
-    loadTasks();
+    connector.updateTaskFile(request.file.filename, request.body.taskIdAdd);
+    connector.loadTasks(tasksList);
     response.redirect("/");
 });
 
 app.post("/loadFile", urlencodedParser, function (request, response) {
     if(!request.body) return response.sendStatus(400);
-    updateTaskFile("", request.body.taskIdDel);
-    loadTasks();
+    connector.updateTaskFile("", request.body.taskIdDel);
+    connector.loadTasks(tasksList);
     response.download("./addFiles/" + request.body.taskIdDel + "/" + request.body.fileNameGet);
 });
 
@@ -107,44 +118,7 @@ app.post("/loadFile", urlencodedParser, function (request, response) {
 
 
 
-function updateTaskFile(filename, id) {
-    client.query('UPDATE tasks SET tfile = $1 WHERE tid = $2', [filename, id], function(err, result) {
-        if (err) {throw err;}
-    });
-}
 
-function insertTask(name = null, description = null, status = false, date = null) {
-    client.query('INSERT INTO tasks (tname, tdescription, tisimportant, tdate) VALUES ($1, $2, $3, $4)', [name, description, status, date], function(err, result) {
-        if (err) {throw err;}
-    });
-}
-
-function deleteTask(id) {
-    client.query('DELETE FROM tasks WHERE tid = $1', [id], function(err, result) {
-        if (err) {throw err;}
-    });
-}
-
-function loadTasks() {
-    client.query('SELECT * FROM tasks', (err, result) => {
-        if (err) {throw err;}
-        tasksList.splice(0, tasksList.length);
-        for (let i = 0, numTasks = result.rows.length; i < numTasks; i++) {
-            createTaskFromRow(result.rows[i], tasksList);
-        }
-    });
-    return true;
-}
-
-function createTaskFromRow(row, tasksList) {
-    let id = row.tid;
-    let name = row.tname;
-    let date = row.tdate;
-    let description = row.tdescription;
-    let status = row.tisimportant;
-    let file = row.tfile;
-    tasksList.push(new Task(id, name, description, status, date, file));
-}
 
 
 
